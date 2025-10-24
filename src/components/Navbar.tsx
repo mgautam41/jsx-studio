@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import ExampleSnippets from './ExampleSnippets';
+import LibraryInfo from './LibraryInfo';
 
 interface NavbarProps {
   onRun: () => void;
@@ -37,6 +38,7 @@ const Navbar = ({ onRun, onReset, autoRun, onAutoRunToggle, onLoadExample }: Nav
 
         <div className="flex items-center gap-2">
           <ExampleSnippets onSelectExample={onLoadExample} />
+          <LibraryInfo />
           
           <Button
             variant="ghost"

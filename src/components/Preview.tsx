@@ -1,9 +1,9 @@
 import { LiveProvider, LiveError, LivePreview } from 'react-live';
 import { motion } from 'framer-motion';
-import { AlertCircle, CheckCircle } from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
+import { AlertCircle, CheckCircle, AlertTriangle } from 'lucide-react';
 import * as React from 'react';
 import { transformCode, validateCode } from '@/utils/codeTransformer';
+import { buildLibraryScope } from '@/utils/libraryRegistry';
 
 interface PreviewProps {
   code: string;
@@ -12,6 +12,7 @@ interface PreviewProps {
 const Preview = ({ code }: PreviewProps) => {
   const [transformedCode, setTransformedCode] = React.useState('');
   const [validationError, setValidationError] = React.useState<string | null>(null);
+  const [warnings, setWarnings] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     const validation = validateCode(code);
@@ -19,6 +20,7 @@ const Preview = ({ code }: PreviewProps) => {
     if (!validation.valid) {
       setValidationError(validation.error || 'Invalid code');
       setTransformedCode('');
+      setWarnings(validation.warnings || []);
       return;
     }
 
@@ -26,21 +28,16 @@ const Preview = ({ code }: PreviewProps) => {
       const transformed = transformCode(code);
       setTransformedCode(transformed);
       setValidationError(null);
+      setWarnings(validation.warnings || []);
     } catch (error) {
       setValidationError('Failed to transform code: ' + (error as Error).message);
       setTransformedCode('');
+      setWarnings([]);
     }
   }, [code]);
 
-  const scope = {
-    ...LucideIcons,
-    React,
-    useState: React.useState,
-    useEffect: React.useEffect,
-    useRef: React.useRef,
-    useMemo: React.useMemo,
-    useCallback: React.useCallback,
-  };
+  // Build comprehensive scope with all supported libraries
+  const scope = React.useMemo(() => buildLibraryScope(), []);
 
   return (
     <motion.div
@@ -51,13 +48,32 @@ const Preview = ({ code }: PreviewProps) => {
     >
       <div className="px-4 py-3 border-b border-border flex items-center justify-between">
         <h2 className="font-semibold text-sm">Live Preview</h2>
-        {!validationError && transformedCode && (
+        {!validationError && transformedCode && warnings.length === 0 && (
           <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400">
             <CheckCircle className="h-3.5 w-3.5" />
             <span>Ready</span>
           </div>
         )}
+        {warnings.length > 0 && !validationError && (
+          <div className="flex items-center gap-1.5 text-xs text-yellow-600 dark:text-yellow-400">
+            <AlertTriangle className="h-3.5 w-3.5" />
+            <span>Warnings</span>
+          </div>
+        )}
       </div>
+
+      {warnings.length > 0 && (
+        <div className="px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/30 text-xs">
+          <div className="flex items-start gap-2 text-yellow-700 dark:text-yellow-400">
+            <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+            <div className="flex-1">
+              {warnings.map((warning, idx) => (
+                <div key={idx}>{warning}</div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {validationError ? (
         <div className="flex-1 overflow-auto p-6 bg-preview-bg">

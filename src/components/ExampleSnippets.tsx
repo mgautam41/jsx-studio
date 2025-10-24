@@ -41,6 +41,45 @@ function Garage() {
 createRoot(document.getElementById('root')).render(<Garage />);`,
   },
   {
+    title: 'Framer Motion Animation',
+    description: 'Animated card with motion library',
+    code: `import { motion } from "framer-motion";
+import { Heart } from "lucide-react";
+
+function AnimatedCard() {
+  const [likes, setLikes] = useState(0);
+
+  return (
+    <div className="flex items-center justify-center min-h-[300px]">
+      <motion.div
+        className="p-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl shadow-2xl"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <motion.div
+          className="flex flex-col items-center gap-4 text-white"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <h2 className="text-3xl font-bold">Animated Card</h2>
+          <motion.button
+            onClick={() => setLikes(likes + 1)}
+            className="flex items-center gap-2 px-6 py-3 bg-white/20 rounded-full hover:bg-white/30"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <Heart className="w-6 h-6" fill={likes > 0 ? "white" : "none"} />
+            <span className="font-semibold">{likes} Likes</span>
+          </motion.button>
+        </motion.div>
+      </motion.div>
+    </div>
+  );
+}
+
+render(<AnimatedCard />);`,
+  },
+  {
     title: 'State Hook',
     description: 'Interactive counter with useState',
     code: `function Counter() {
@@ -174,9 +213,8 @@ const ExampleSnippets = ({ onSelectExample }: ExampleSnippetsProps) => {
                     <p className="text-xs text-muted-foreground">{example.description}</p>
                   </div>
                   
-                  <pre className="text-xs bg-muted p-3 rounded-lg overflow-x-auto code-font">
-                    {example.code.split('\n').slice(0, 5).join('\n')}
-                    {example.code.split('\n').length > 5 && '\n...'}
+                  <pre className="text-xs bg-muted p-3 rounded-lg overflow-x-auto code-font max-h-32">
+                    {example.code}
                   </pre>
 
                   <div className="flex gap-2">

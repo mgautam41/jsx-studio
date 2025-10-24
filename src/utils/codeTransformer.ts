@@ -1,11 +1,13 @@
+import { getUnsupportedLibraries } from './libraryRegistry';
+
 /**
  * Transforms various React code patterns to work with react-live
  */
 export const transformCode = (code: string): string => {
   let transformed = code.trim();
 
-  // Remove import statements (react-live provides React automatically)
-  transformed = transformed.replace(/import\s+.*?from\s+['"].*?['"];?\s*/g, '');
+  // Remove ALL import statements (libraries are provided via scope)
+  transformed = transformed.replace(/import\s+.*?from\s+['"].*?['"];?\s*\n?/g, '');
   
   // Remove export default statements and get component name
   const exportDefaultMatch = transformed.match(/export\s+default\s+(\w+);?\s*$/m);
@@ -16,15 +18,18 @@ export const transformCode = (code: string): string => {
     transformed += `\n\nrender(<${componentName} />);`;
   }
 
+  // Remove other export statements
+  transformed = transformed.replace(/export\s+(?:const|let|var|function|class)\s+/g, '');
+
   // Transform createRoot().render() to render()
   transformed = transformed.replace(
-    /createRoot\s*\(\s*document\.getElementById\s*\(['"]root['"]\)\s*\)\.render\s*\(\s*(<[^>]+\s*\/>)\s*\);?/g,
+    /createRoot\s*\(\s*document\.getElementById\s*\(['"]root['"]\)\s*\)\.render\s*\(\s*(<[\s\S]*?<\/\w+>|\s*<\w+\s*\/>)\s*\);?/g,
     'render($1);'
   );
   
   // Transform ReactDOM.render() to render()
   transformed = transformed.replace(
-    /ReactDOM\.render\s*\(\s*(<[^>]+\s*\/>)\s*,\s*document\.getElementById\s*\(['"]root['"]\)\s*\);?/g,
+    /ReactDOM\.render\s*\(\s*(<[\s\S]*?<\/\w+>|\s*<\w+\s*\/>)\s*,\s*document\.getElementById\s*\(['"]root['"]\)\s*\);?/g,
     'render($1);'
   );
 
@@ -46,13 +51,21 @@ export const transformCode = (code: string): string => {
 };
 
 /**
- * Validates if code has proper structure
+ * Validates if code has proper structure and checks for unsupported libraries
  */
-export const validateCode = (code: string): { valid: boolean; error?: string } => {
+export const validateCode = (code: string): { valid: boolean; error?: string; warnings?: string[] } => {
   const trimmed = code.trim();
   
   if (!trimmed) {
     return { valid: false, error: 'Code cannot be empty' };
+  }
+
+  // Check for unsupported libraries
+  const unsupportedLibs = getUnsupportedLibraries(trimmed);
+  const warnings: string[] = [];
+  
+  if (unsupportedLibs.length > 0) {
+    warnings.push(`Unsupported libraries: ${unsupportedLibs.join(', ')}`);
   }
 
   // Check for basic syntax errors
@@ -60,15 +73,15 @@ export const validateCode = (code: string): { valid: boolean; error?: string } =
   const closeBraces = (trimmed.match(/}/g) || []).length;
   
   if (openBraces !== closeBraces) {
-    return { valid: false, error: 'Unmatched braces detected' };
+    return { valid: false, error: 'Unmatched braces detected', warnings };
   }
 
   const openParens = (trimmed.match(/\(/g) || []).length;
   const closeParens = (trimmed.match(/\)/g) || []).length;
   
   if (openParens !== closeParens) {
-    return { valid: false, error: 'Unmatched parentheses detected' };
+    return { valid: false, error: 'Unmatched parentheses detected', warnings };
   }
 
-  return { valid: true };
+  return { valid: true, warnings: warnings.length > 0 ? warnings : undefined };
 };
