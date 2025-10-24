@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
+import Sidebar from '@/components/Sidebar';
 import CodeEditor from '@/components/CodeEditor';
 import Preview from '@/components/Preview';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const DEFAULT_CODE = `function Component() {
   const [count, setCount] = useState(0);
@@ -34,12 +36,21 @@ const DEFAULT_CODE = `function Component() {
 render(<Component />);`;
 
 const Index = () => {
+  const isMobile = useIsMobile();
+  
   const [code, setCode] = useState(() => {
     const saved = localStorage.getItem('react-runner-code');
     return saved || DEFAULT_CODE;
   });
   const [previewCode, setPreviewCode] = useState(code);
-  const [autoRun, setAutoRun] = useState(false);
+  const [autoRun, setAutoRun] = useState(() => {
+    // Enable auto-run by default on mobile devices
+    const savedAutoRun = localStorage.getItem('react-runner-autorun');
+    if (savedAutoRun !== null) {
+      return JSON.parse(savedAutoRun);
+    }
+    return isMobile;
+  });
 
   useEffect(() => {
     localStorage.setItem('react-runner-code', code);
@@ -63,7 +74,9 @@ const Index = () => {
   };
 
   const handleAutoRunToggle = () => {
-    setAutoRun(!autoRun);
+    const newAutoRun = !autoRun;
+    setAutoRun(newAutoRun);
+    localStorage.setItem('react-runner-autorun', JSON.stringify(newAutoRun));
   };
 
   const handleLoadExample = (exampleCode: string) => {
@@ -74,7 +87,8 @@ const Index = () => {
   return (
     <ThemeProvider>
       <div className="min-h-screen flex flex-col bg-background">
-        <Navbar 
+        <Navbar />
+        <Sidebar 
           onRun={handleRun} 
           onReset={handleReset}
           autoRun={autoRun}

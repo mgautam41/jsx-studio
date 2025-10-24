@@ -216,12 +216,11 @@ const ExampleSnippets = ({ onSelectExample }: ExampleSnippetsProps) => {
     <div className="relative">
       <Button
         variant="outline"
-        size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="gap-2"
+        className="w-full justify-start gap-3"
       >
         <Code className="h-4 w-4" />
-        <span className="hidden sm:inline">Examples</span>
+        Code Examples
       </Button>
 
       <AnimatePresence>
@@ -236,10 +235,10 @@ const ExampleSnippets = ({ onSelectExample }: ExampleSnippetsProps) => {
             />
             
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="absolute right-0 top-12 w-[90vw] sm:w-96 max-h-[600px] overflow-y-auto glass rounded-xl shadow-2xl border z-50 p-4 space-y-3"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="fixed inset-4 md:inset-8 lg:left-96 lg:inset-y-8 lg:right-8 max-h-[80vh] overflow-y-auto glass rounded-xl shadow-2xl border z-50 p-6 space-y-4"
             >
               <div className="flex items-center justify-between mb-2 sticky top-0 bg-card z-10 pb-2">
                 <h3 className="font-semibold">Code Examples</h3>
