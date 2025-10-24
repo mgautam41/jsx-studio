@@ -37,7 +37,11 @@ const Preview = ({ code }: PreviewProps) => {
   }, [code]);
 
   // Build comprehensive scope with all supported libraries
-  const scope = React.useMemo(() => buildLibraryScope(), []);
+  const scope = React.useMemo(() => {
+    const builtScope = buildLibraryScope();
+    console.log('Available scope:', Object.keys(builtScope).slice(0, 20)); // Debug log
+    return builtScope;
+  }, []);
 
   return (
     <motion.div
@@ -63,13 +67,17 @@ const Preview = ({ code }: PreviewProps) => {
       </div>
 
       {warnings.length > 0 && (
-        <div className="px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/30 text-xs">
-          <div className="flex items-start gap-2 text-yellow-700 dark:text-yellow-400">
-            <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
-            <div className="flex-1">
+        <div className="px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/30">
+          <div className="flex items-start gap-2 text-xs">
+            <AlertTriangle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
+            <div className="flex-1 text-yellow-700 dark:text-yellow-300">
+              <div className="font-semibold mb-1">Warnings:</div>
               {warnings.map((warning, idx) => (
-                <div key={idx}>{warning}</div>
+                <div key={idx} className="text-yellow-600 dark:text-yellow-400">{warning}</div>
               ))}
+              <div className="mt-1 text-yellow-600 dark:text-yellow-400">
+                Note: Your code will still run with available libraries. Check the Libraries button for supported packages.
+              </div>
             </div>
           </div>
         </div>
@@ -95,13 +103,29 @@ const Preview = ({ code }: PreviewProps) => {
             </div>
           </div>
 
-          <LiveError className="border-t border-destructive/30 bg-destructive/10 px-4 py-3 text-sm code-font text-destructive flex items-start gap-2 max-h-32 overflow-auto">
-            {(error) => error && (
-              <>
-                <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <div className="flex-1 whitespace-pre-wrap">{error}</div>
-              </>
-            )}
+          <LiveError className="border-t border-destructive/30 bg-destructive/10 px-4 py-3 text-sm code-font text-destructive max-h-32 overflow-auto">
+            {(error: any) => {
+              if (!error) return null;
+              
+              const errorStr = String(error);
+              console.error('Runtime error:', errorStr); // Debug log
+              
+              return (
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <div className="font-semibold mb-1">Runtime Error:</div>
+                    <div className="whitespace-pre-wrap text-xs">{errorStr}</div>
+                    {errorStr.includes('is not defined') && (
+                      <div className="mt-2 text-xs text-destructive/80">
+                        💡 Tip: Make sure all imports are from supported libraries. 
+                        Click "Libraries" button to see what's available.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            }}
           </LiveError>
         </LiveProvider>
       )}

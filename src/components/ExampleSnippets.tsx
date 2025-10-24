@@ -1,4 +1,4 @@
-import { Code, Copy, Check } from 'lucide-react';
+import { Code, Copy, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useState } from 'react';
@@ -41,72 +41,116 @@ function Garage() {
 createRoot(document.getElementById('root')).render(<Garage />);`,
   },
   {
-    title: 'Framer Motion Animation',
-    description: 'Animated card with motion library',
-    code: `import { motion } from "framer-motion";
-import { Heart } from "lucide-react";
+    title: 'Framer Motion + Lucide',
+    description: 'Full library import example',
+    code: `import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, Heart, MessageCircle, Share2 } from "lucide-react";
 
-function AnimatedCard() {
+function SocialCard() {
   const [likes, setLikes] = useState(0);
+  const [comments, setComments] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
 
   return (
-    <div className="flex items-center justify-center min-h-[300px]">
+    <div className="flex items-center justify-center min-h-[400px] p-4">
       <motion.div
-        className="p-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl shadow-2xl"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
       >
-        <motion.div
-          className="flex flex-col items-center gap-4 text-white"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <h2 className="text-3xl font-bold">Animated Card</h2>
+        <div className="flex items-center gap-3 mb-4">
+          <motion.div
+            className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center"
+            whileHover={{ scale: 1.1, rotate: 360 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Sparkles className="w-6 h-6 text-white" />
+          </motion.div>
+          <div>
+            <h3 className="font-bold text-lg">Amazing Post</h3>
+            <p className="text-sm text-gray-500">Just now</p>
+          </div>
+        </div>
+
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+          Check out this awesome React Component Runner! 🚀
+          Built with Framer Motion for smooth animations.
+        </p>
+
+        <div className="flex gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <motion.button
-            onClick={() => setLikes(likes + 1)}
-            className="flex items-center gap-2 px-6 py-3 bg-white/20 rounded-full hover:bg-white/30"
+            onClick={() => {
+              setIsLiked(!isLiked);
+              setLikes(isLiked ? likes - 1 : likes + 1);
+            }}
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-pink-500"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <Heart className="w-6 h-6" fill={likes > 0 ? "white" : "none"} />
-            <span className="font-semibold">{likes} Likes</span>
+            <Heart
+              className="w-5 h-5"
+              fill={isLiked ? "currentColor" : "none"}
+            />
+            <span className="font-semibold">{likes}</span>
           </motion.button>
-        </motion.div>
+
+          <motion.button
+            onClick={() => setComments(comments + 1)}
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-500"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <MessageCircle className="w-5 h-5" />
+            <span className="font-semibold">{comments}</span>
+          </motion.button>
+
+          <motion.button
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-green-500"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <Share2 className="w-5 h-5" />
+          </motion.button>
+        </div>
       </motion.div>
     </div>
   );
 }
 
-render(<AnimatedCard />);`,
+render(<SocialCard />);`,
   },
   {
-    title: 'State Hook',
+    title: 'State Hook Counter',
     description: 'Interactive counter with useState',
     code: `function Counter() {
   const [count, setCount] = useState(0);
   
   return (
-    <div className="text-center space-y-4">
-      <h2 className="text-3xl font-bold">Count: {count}</h2>
-      <div className="flex gap-2 justify-center">
-        <button 
-          onClick={() => setCount(count - 1)}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-        >
-          Decrease
-        </button>
-        <button 
-          onClick={() => setCount(0)}
-          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-        >
-          Reset
-        </button>
-        <button 
-          onClick={() => setCount(count + 1)}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-        >
-          Increase
-        </button>
+    <div className="flex items-center justify-center min-h-[300px]">
+      <div className="text-center space-y-4">
+        <h2 className="text-4xl font-bold">Count: {count}</h2>
+        <div className="flex gap-2 justify-center">
+          <button 
+            onClick={() => setCount(count - 1)}
+            className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors shadow-lg"
+          >
+            Decrease
+          </button>
+          <button 
+            onClick={() => setCount(0)}
+            className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors shadow-lg"
+          >
+            Reset
+          </button>
+          <button 
+            onClick={() => setCount(count + 1)}
+            className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors shadow-lg"
+          >
+            Increase
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -115,8 +159,8 @@ render(<AnimatedCard />);`,
 render(<Counter />);`,
   },
   {
-    title: 'List Rendering',
-    description: 'Map through array to render list',
+    title: 'Todo List',
+    description: 'List rendering with state management',
     code: `function TodoList() {
   const [todos, setTodos] = useState([
     { id: 1, text: 'Learn React', done: false },
@@ -131,19 +175,21 @@ render(<Counter />);`,
   };
 
   return (
-    <div className="max-w-md mx-auto space-y-3">
-      <h2 className="text-2xl font-bold mb-4">My Todo List</h2>
-      {todos.map(todo => (
-        <div 
-          key={todo.id}
-          onClick={() => toggleTodo(todo.id)}
-          className="p-3 bg-gray-100 dark:bg-gray-800 rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-        >
-          <span className={todo.done ? 'line-through text-gray-500' : ''}>
-            {todo.text}
-          </span>
-        </div>
-      ))}
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="w-full max-w-md space-y-3 p-6">
+        <h2 className="text-3xl font-bold mb-6 text-center">My Todo List</h2>
+        {todos.map(todo => (
+          <div 
+            key={todo.id}
+            onClick={() => toggleTodo(todo.id)}
+            className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shadow-md"
+          >
+            <span className={todo.done ? 'line-through text-gray-500' : 'text-gray-900 dark:text-gray-100 font-medium'}>
+              {todo.text}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -175,7 +221,7 @@ const ExampleSnippets = ({ onSelectExample }: ExampleSnippetsProps) => {
         className="gap-2"
       >
         <Code className="h-4 w-4" />
-        Examples
+        <span className="hidden sm:inline">Examples</span>
       </Button>
 
       <AnimatePresence>
@@ -193,16 +239,16 @@ const ExampleSnippets = ({ onSelectExample }: ExampleSnippetsProps) => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute right-0 top-12 w-96 max-h-[600px] overflow-y-auto glass rounded-xl shadow-2xl border z-50 p-4 space-y-3"
+              className="absolute right-0 top-12 w-[90vw] sm:w-96 max-h-[600px] overflow-y-auto glass rounded-xl shadow-2xl border z-50 p-4 space-y-3"
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-2 sticky top-0 bg-card z-10 pb-2">
                 <h3 className="font-semibold">Code Examples</h3>
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
                   onClick={() => setIsOpen(false)}
                 >
-                  Close
+                  <X className="h-4 w-4" />
                 </Button>
               </div>
 
@@ -213,7 +259,7 @@ const ExampleSnippets = ({ onSelectExample }: ExampleSnippetsProps) => {
                     <p className="text-xs text-muted-foreground">{example.description}</p>
                   </div>
                   
-                  <pre className="text-xs bg-muted p-3 rounded-lg overflow-x-auto code-font max-h-32">
+                  <pre className="text-xs bg-muted p-3 rounded-lg overflow-x-auto code-font max-h-40 overflow-y-auto">
                     {example.code}
                   </pre>
 
