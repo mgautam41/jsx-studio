@@ -2,15 +2,17 @@ import { Moon, Sun, Play, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { motion } from 'framer-motion';
+import ExampleSnippets from './ExampleSnippets';
 
 interface NavbarProps {
   onRun: () => void;
   onReset: () => void;
   autoRun: boolean;
   onAutoRunToggle: () => void;
+  onLoadExample: (code: string) => void;
 }
 
-const Navbar = ({ onRun, onReset, autoRun, onAutoRunToggle }: NavbarProps) => {
+const Navbar = ({ onRun, onReset, autoRun, onAutoRunToggle, onLoadExample }: NavbarProps) => {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -34,6 +36,8 @@ const Navbar = ({ onRun, onReset, autoRun, onAutoRunToggle }: NavbarProps) => {
         </div>
 
         <div className="flex items-center gap-2">
+          <ExampleSnippets onSelectExample={onLoadExample} />
+          
           <Button
             variant="ghost"
             size="sm"

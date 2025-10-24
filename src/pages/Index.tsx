@@ -5,7 +5,7 @@ import Preview from '@/components/Preview';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
 const DEFAULT_CODE = `function Component() {
-  const [count, setCount] = React.useState(0);
+  const [count, setCount] = useState(0);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[300px] gap-4">
@@ -66,6 +66,11 @@ const Index = () => {
     setAutoRun(!autoRun);
   };
 
+  const handleLoadExample = (exampleCode: string) => {
+    setCode(exampleCode);
+    setPreviewCode(exampleCode);
+  };
+
   return (
     <ThemeProvider>
       <div className="min-h-screen flex flex-col bg-background">
@@ -74,6 +79,7 @@ const Index = () => {
           onReset={handleReset}
           autoRun={autoRun}
           onAutoRunToggle={handleAutoRunToggle}
+          onLoadExample={handleLoadExample}
         />
         
         <main className="flex-1 container mx-auto px-4 py-6">
